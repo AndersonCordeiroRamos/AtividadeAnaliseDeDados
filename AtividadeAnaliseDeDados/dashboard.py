@@ -4,7 +4,7 @@ import plotly.express as px
 import pydeck as pdk
 import gdown
 
-# Baixar os dados do Google Drive
+
 @st.cache_data
 def download_data():
     file_id = "1hHf_s19PneIyR4mFgFUhboKlEce3B5Po"  # Substitua pelo ID do seu arquivo
@@ -13,7 +13,7 @@ def download_data():
     gdown.download(url, output, quiet=False)
     return output
 
-# Carregar os dados
+
 @st.cache_data
 def load_data():
     csv_file = download_data()
@@ -27,18 +27,18 @@ def load_data():
         parse_dates=["tpep_pickup_datetime", "tpep_dropoff_datetime"]
     )
     
-    # Convertendo colunas categóricas para economizar memória
+    
     df["payment_type"] = df["payment_type"].astype("category")
     
     return df
 
 df = load_data()
 
-# Layout do Dashboard
+
 st.title("🚖 NYC Yellow Taxi Dashboard")
 st.markdown("Uma análise dos padrões de viagens de táxi em Nova York.")
 
-# 1. Visão Geral
+
 total_trips = df.shape[0]
 total_revenue = df["total_amount"].sum()
 avg_passengers = df["passenger_count"].mean()
@@ -47,7 +47,7 @@ st.metric("Total de Viagens", total_trips)
 st.metric("Receita Total ($)", f"{total_revenue:,.2f}")
 st.metric("Média de Passageiros por Viagem", f"{avg_passengers:.2f}")
 
-# 2. Padrões de Viagem
+
 st.subheader("📅 Viagens ao longo do tempo")
 df["date"] = df["tpep_pickup_datetime"].dt.date
 daily_trips = df.groupby("date").size().reset_index(name="viagens")
@@ -59,7 +59,7 @@ fig_time = px.line(
 )
 st.plotly_chart(fig_time, use_container_width=True)
 
-# 3. Distribuição Geográfica
+
 st.subheader("🗺️ Mapa de Pickups")
 lat_min, lat_max = 40.5, 41.0
 lon_min, lon_max = -74.3, -73.7
@@ -76,7 +76,7 @@ if not df[["pickup_latitude", "pickup_longitude"]].dropna().empty:
 else:
     st.write("Sem dados de localização para exibição.")
 
-# 4. Análise de Tarifas e Pagamentos
+
 st.subheader("💳 Métodos de Pagamento")
 if not df["payment_type"].dropna().empty:
     payment_map = {
